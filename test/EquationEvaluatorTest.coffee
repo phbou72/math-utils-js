@@ -1,7 +1,7 @@
 assert = require("assert")
 should = require("should")
 
-evaluator = require("../build/EquationEvaluator.js")
+evaluator = require("../build/lib/math.utils.equation.evaluator.js")
 
 describe 'EquationSolver', ->
 

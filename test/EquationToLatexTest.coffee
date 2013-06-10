@@ -1,7 +1,7 @@
 assert = require("assert")
 should = require("should")
 
-equaToLatex = require("../build/EquationToLaTex.js")
+equaToLatex = require("../build/lib/math.utils.equation.tolatex.js")
 
 describe 'EquationToLatex', ->
 

@@ -1,6 +1,5 @@
 $(document).ready(function () {
   var graph = new MathUtils.GraphPaper("#graph-paper");
-  //graph.moveOrigin(400, 200);
 
   graph.addShapes(
     {

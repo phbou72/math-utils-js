@@ -11,32 +11,38 @@
 #
 module.exports = (grunt) ->
 
-  # Project configuration.
   grunt.initConfig
     pkg: '<json:package.json>'
+
+    clean: ["build"]
 
     jison:
       js:
         type: 'commonjs'
         files:
-          'build/EquationEvaluator.js' : 'jison/EquationEvaluator.jison'
-          'build/EquationToLaTex.js' : 'jison/EquationToLaTex.jison'
+          'build/lib/math.utils.equation.evaluator.js' : 'jison/EquationEvaluator.jison'
+          'build/lib/math.utils.equation.tolatex.js' : 'jison/EquationToLaTex.jison'
 
     coffee:
       compile:
-        files:
-          'build/math.utils.classes.js': [
-            'src/Loader.coffee' # Must be first in the file list
-            'src/**/*.coffee'
-          ]
+        files: [
+          expand: true
+          cwd: "./src"
+          src: ["**/*.coffee"]
+          dest: "./build"
+          ext: ".js"       
+        ]
+
+    concat: 
+      dist:
+        src: ['build/lib/Namespace.js'
+         'build/lib/**/*.js', ]
+        dest: 'lib/math.utils.js'
 
     uglify:
       internal:
-        src: ['build/math.utils.classes.js', 'build/EquationEvaluator.js', 'build/EquationToLaTex.js']
-        dest: 'build/math.utils.min.js'
-
-
-    clean: ["build/EquationEvaluator.js", "build/EquationToLaTex.js"]
+        src: ['lib/math.utils.js']
+        dest: 'lib/math.utils.min.js'
 
   grunt.loadTasks 'tasks'
 
@@ -52,7 +58,7 @@ module.exports = (grunt) ->
     child.stdout.pipe(process.stdout)
     child.stderr.pipe(process.stderr)
 
-  grunt.registerTask 'default', ['jison', 'coffee', 'uglify']
+  grunt.registerTask 'default', ['clean', 'jison', 'coffee', 'concat', 'uglify']
 
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-concat'
