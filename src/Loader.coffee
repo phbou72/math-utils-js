@@ -1,0 +1,1 @@
+MathUtils = exports? and exports or @MathUtils = {}

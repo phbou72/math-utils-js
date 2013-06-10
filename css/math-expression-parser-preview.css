@@ -1,0 +1,14 @@
+body {
+    padding: 10px;
+}
+
+.question {
+    visibility: hidden;
+    background-color: #fcf8e3;
+    padding: 5px;
+}
+
+div.MathJax_SVG_Display {
+  margin-top:2px;
+  margin-bottom:2px;
+}
