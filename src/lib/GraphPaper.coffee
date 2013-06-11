@@ -90,7 +90,7 @@ class MathUtils.GraphPaper
 
   initToolsButton: =>
     _.each tools, (tool) =>
-      button = d3.select(node.parentNode.parentNode).select("." + tool)[0][0] # TODO Bug with IE? d3.select(handle.parentNode)[0][0].parentElement
+      button = d3.select(node.parentNode.parentNode).select("." + tool)[0][0] 
 
       if tool is currentTool 
         d3.select(button).classed("active", "active")
@@ -438,12 +438,11 @@ class MathUtils.GraphPaper
     if currentTool is "move" and not draggingVertex and not draggingPath 
       if d3.event.target.nodeName in ["path", "circle"]
         path = d3.event.target
-        parentPath = d3.select(path.parentNode)[0][0].parentElement
+        parentPath = d3.select(path.parentNode)[0][0].parentNode
         pathIndex = @findParentPathIndex(parentPath)
 
       if not @isShapeEditable(parentPath)
         return 
-
       if d3.select(parentPath).select("g.handles").empty() is true
         d3.select(parentPath).append("g")
           .attr("class", "handles")
@@ -509,7 +508,7 @@ class MathUtils.GraphPaper
 
   onHandleClickAddVertex: (data, handleId) =>
     handle = d3.event.target
-    parentPath = d3.select(handle.parentNode)[0][0].parentElement
+    parentPath = d3.select(handle.parentNode)[0][0].parentNode
     pathIndex = @findParentPathIndex(parentPath)
 
     x = parseFloat(d3.select(handle).attr("cx"))
@@ -628,7 +627,7 @@ class MathUtils.GraphPaper
 
   deleteVertex: (vertexId) =>
     vertex = d3.event.target
-    parentPath = d3.select(vertex.parentNode)[0][0].parentElement
+    parentPath = d3.select(vertex.parentNode)[0][0].parentNode
     pathNode = d3.select(parentPath)
     pathId = @findParentPathIndex(parentPath)
 
@@ -655,7 +654,7 @@ class MathUtils.GraphPaper
     path = d3.event.target
 
     if path.nodeName is "path"
-      parentPath = d3.select(path.parentNode)[0][0].parentElement
+      parentPath = d3.select(path.parentNode)[0][0].parentNode
       pathId = @findParentPathIndex(parentPath)
 
       if not @isShapeEditable(parentPath)
