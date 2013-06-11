@@ -436,8 +436,8 @@ class MathUtils.GraphPaper
 
   showAddVertexHandle: =>
     if currentTool is "move" and not draggingVertex and not draggingPath 
-      if d3.event.srcElement.nodeName in ["path", "circle"]
-        path = d3.event.toElement
+      if d3.event.target.nodeName in ["path", "circle"]
+        path = d3.event.target
         parentPath = d3.select(path.parentNode)[0][0].parentElement
         pathIndex = @findParentPathIndex(parentPath)
 
@@ -508,7 +508,7 @@ class MathUtils.GraphPaper
 
 
   onHandleClickAddVertex: (data, handleId) =>
-    handle = d3.event.toElement
+    handle = d3.event.target
     parentPath = d3.select(handle.parentNode)[0][0].parentElement
     pathIndex = @findParentPathIndex(parentPath)
 
@@ -530,7 +530,7 @@ class MathUtils.GraphPaper
 
   startDraggingVertex: (vertexId) =>
     draggingVertex = yes
-    draggedVertex = d3.event.toElement
+    draggedVertex = d3.event.target
     draggedVertexId = vertexId
 
     @registerSVGEvent("mousemove", @onMouseMoveVertex)
@@ -571,10 +571,10 @@ class MathUtils.GraphPaper
 
 
   startDraggingPath: =>
-    path = d3.event.toElement
+    path = d3.event.target
 
     if path.tagName is "path"
-      parentPath = d3.event.toElement.parentNode.parentNode
+      parentPath = path.parentNode.parentNode
       parentPathId = @findParentPathIndex(parentPath)
 
       if not @isShapeEditable(parentPath)
@@ -627,7 +627,7 @@ class MathUtils.GraphPaper
   ## Delete tool
 
   deleteVertex: (vertexId) =>
-    vertex = d3.event.toElement
+    vertex = d3.event.target
     parentPath = d3.select(vertex.parentNode)[0][0].parentElement
     pathNode = d3.select(parentPath)
     pathId = @findParentPathIndex(parentPath)
@@ -652,8 +652,9 @@ class MathUtils.GraphPaper
 
 
   deletePath: =>
-    if d3.event.toElement.tagName is "path"
-      path = d3.event.toElement
+    path = d3.event.target
+
+    if path.nodeName is "path"
       parentPath = d3.select(path.parentNode)[0][0].parentElement
       pathId = @findParentPathIndex(parentPath)
 
@@ -843,6 +844,9 @@ class MathUtils.GraphPaper
     invertedY = - 1 * y
     svg.attr('transform', 'translate(' + x + ',' + invertedY + ')')
 
+  isShapeEditable: (path) =>
+    return not (d3.select(path).classed("initial-shape") is true and initialPathEditable is false)
+
 
   #####
   # Add or get added path
@@ -975,7 +979,3 @@ class MathUtils.GraphPaper
 
   setInitialPathEditable: (isEditable) =>
     initialPathEditable = isEditable
-
-  isShapeEditable: (path) =>
-    return not (d3.select(path).classed("initial-shape") is true and initialPathEditable is false)
-
