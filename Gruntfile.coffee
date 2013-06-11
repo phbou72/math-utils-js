@@ -24,7 +24,7 @@ module.exports = (grunt) ->
           'build/lib/math.utils.equation.tolatex.js' : 'jison/EquationToLaTex.jison'
 
     coffee:
-      compile:
+      app:
         files: [
           expand: true
           cwd: "./src"
@@ -44,13 +44,12 @@ module.exports = (grunt) ->
         src: ['lib/math.utils.js']
         dest: 'lib/math.utils.min.js'
 
-  grunt.loadTasks 'tasks'
+    watch:
+      app:
+        files: ['src/**/*.coffee']
+        tasks: ['coffee']
 
-  grunt.registerTask 'watch', ->
-    done = grunt.task.current.async()
-    child = grunt.util.spawn {cmd: './node_modules/.bin/coffee', args: ['-o', './build', '-c', '--watch', './src']}
-    child.stdout.pipe(process.stdout)
-    child.stderr.pipe(process.stderr)
+  grunt.loadTasks 'tasks'
 
   grunt.registerTask 'watch-test', ->
     done = grunt.task.current.async()
@@ -64,3 +63,4 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-concat'
   grunt.loadNpmTasks 'grunt-contrib-uglify'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
+  grunt.loadNpmTasks 'grunt-contrib-watch'
