@@ -81,9 +81,6 @@ class MathUtils.GraphPaper
     linesTracer = svg.append("g").attr("class", "line-tracer")
 
     @initToolsButton()
-    d3.select(".added").on("click", =>
-      console.log @getAddedShapes()
-    )
 
 
 ## Tools binding wit UI
@@ -97,6 +94,7 @@ class MathUtils.GraphPaper
 
       d3.select(button).on("click", (element, id) =>
         @switchToTool(tool)
+        d3.event.preventDefault()
       )
 
 

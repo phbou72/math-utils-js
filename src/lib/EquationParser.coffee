@@ -1,8 +1,6 @@
 
 class MathUtils.EquationParser 
 
-  events: {}
-
   evaluate: (expression) ->
 
     if expression != undefined
@@ -18,13 +16,15 @@ class MathUtils.EquationParser
 
     try
       if expression.length > 0
-        return "$$ " + EquationToLaTex.parse(expression) + " $$"
+        return EquationToLaTex.parse(expression)
       else
         return "" + expression
     catch str
       return expression
 
 
+  # TODO Add an argument to specify the number of digits we want to keep
+###
   formatNumber: (number) ->
 
     if number.length == 0
@@ -72,3 +72,5 @@ class MathUtils.EquationParser
       return firstPart + "*10^" + str.substr(ePos + 1, 3)
     else
       return firstPart + "*10^" + str.substr(ePos + 2, 2)
+
+###
