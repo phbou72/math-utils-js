@@ -187,7 +187,7 @@ mathExpressionMathJax.html("$$ " + result + " $$");
 </br>
 
 <p>
-  <strong>Adding a graph paper to a page:</strong></br>
+  <strong>Adding a graph paper to a page :</strong></br>
 
 <pre class="brush: xhtml html">
 &lt;div style=&quot;height: 300px&quot;&gt;
@@ -216,7 +216,7 @@ mathExpressionMathJax.html("$$ " + result + " $$");
 </br>
 
 <p>
-  <strong>Creating a Graph Paper:</strong></br>
+  <strong>Creating a Graph Paper :</strong></br>
 <pre class="brush: js">
 //Specify an HTML id in the call
 var graphPaper = new MathUtils.GraphPaper("#graph-paper");
@@ -226,7 +226,7 @@ var graphPaper = new MathUtils.GraphPaper("#graph-paper");
 </br>
 
 <p>
-  <strong>Adding initial shapes is simple:</strong></br>
+  <strong>Adding initial shapes is simple :</strong></br>
 <pre class="brush: js">
 var graphPaper = new MathUtils.GraphPaper("#graph-paper");
 
@@ -238,6 +238,49 @@ var shapes = {
 
 graphPaper.addShapes(shapes)
 </pre>
+</p>
+
+</br>
+
+<p>
+  <strong>API :</strong></br>
+  <table>
+    <theader>
+      <th>Methods</th>
+      <th>Description</th>
+      <th>Default</th>
+    </theader>
+
+    <tr>
+      <td>setInitialPathEditable(bool)</td>
+      <td>To specify if the initial shapes are editable</td>
+      <td>True</td>
+    </tr>
+
+    <tr>
+      <td>setTool(string)</td>
+      <td>To specify the actual tool used. Values possible : "move", "delete", "vertex", "line", "polygon"</td>
+      <td>"move"</td>
+    </tr>
+
+    <tr>
+      <td>setDrawingMode(string)</td>
+      <td>How : "free", "snapToGrid", "snapToIntersection"</td>
+      <td>"snapToIntersection"</td>
+    </tr>
+
+    <tr>
+      <td>getAllShapes()</td>
+      <td>Return all the shapes vertexs in an object</td>
+      <td></td>
+    </tr>
+
+    <tr>
+      <td>getAddedShapes()</td>
+      <td>Return only the shapes manually added</td>
+      <td></td>
+    </tr>
+  </table>
 </p>
 
 </br>
