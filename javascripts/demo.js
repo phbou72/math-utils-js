@@ -19,7 +19,7 @@ $(document).ready(function () {
   
   var latexCode = parser.convertToLaTex(mathExpression2.html());
   mathExpressionLatex.html(latexCode);
-  mathExpressionMathJax.html(latexCode);
+  mathExpressionMathJax.html("$$" + latexCode + "$$");
 
 
   // Display a graph paper
