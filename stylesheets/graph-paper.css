@@ -1,0 +1,118 @@
+svg text, svg g, circle, path, line, rect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+path {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+
+line {
+  stroke: #AAA;
+  stroke-width: 2px;
+  vector-effect: non-scaling-stroke;
+}
+
+rect {
+  vector-effect: non-scaling-stroke;
+  shape-rendering:crispEdges
+}
+
+circle {
+  fill: #000
+  vector-effect: non-scaling-stroke;
+}
+
+rect.background {
+  fill:#FFF;
+}
+
+/* Axis*/
+line.axisX, line.axisY {
+  stroke: #000;
+  stroke-width: 4px;
+}
+
+text.axis-number {
+  font-size: 14px;
+  fill: #000;
+  font-weight:bold;
+}
+
+
+/*New lines*/
+g.path-group > path {
+  fill:none;
+  stroke: #0d7945;
+  stroke-width: 3px;
+}
+
+g.added-polygon > g.path-group > path {
+  fill: #2cba50;
+  fill-opacity: 0.5;
+}
+
+g.initial-shape > g.path-group > path {
+  stroke: #046fd6;
+}
+
+g.initial-shape.added-polygon > g.path-group > path {
+  fill: #046fd6;
+  stroke: #046fd6;
+  fill-opacity: 0.5;
+}
+
+g.initial-shape > g.vertexs > circle.path-vertex {
+  fill: #046fd6;
+}
+
+circle.path-vertex {
+  font-size: 14px;
+  fill: #0d7945;
+}
+
+circle.handle {
+  fill: #0d7945;
+  stroke: #0d7945;
+  stroke-width: 2px;
+  fill-opacity: 0.5;
+}
+
+g.initial-shape circle.handle{
+  fill: #046fd6;
+  stroke: #046fd6;
+}
+
+/*Pointers*/
+circle.vertex-pointer {
+  fill: #999;
+}
+
+line.line-pointer {
+  fill: none;
+  stroke-width: 3px;
+  stroke: #2aa04b;
+}
+
+text.vertex-coordinates {
+  font-size: 14px;
+  fill: #000;
+}
+
+/* Functions*/
+g.function > path {
+  fill: none;
+  stroke-width:3px;
+  stroke: #046fd6;
+}
+
+#graph-paper {
+  width: 100%;
+  height: 100%;
+  overflow:hidden
+}
