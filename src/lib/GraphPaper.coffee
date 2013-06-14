@@ -479,19 +479,24 @@ class MathUtils.GraphPaper
 
   interpolateFunction: (variable, expression)=>
     parser = new MathUtils.EquationParser()
-    coords = []
+    segments = []
     actualSegment = []
 
     for x in [domainX[0] .. domainX[1]] by 0.1
       exp = expression.replace variable, x
-      console.log exp
       y = parser.evaluate(exp)
-      console.log y
 
-      # verify if NaN of Infinity
-        # Handle invalid values and cut by segment then
-      coord = {x: x; y: y}
-      actualSegment.push(coord)
+      if not _.isFinite(y)
+        if not _.isEmpty(actualSegment)
+          segments.push(actualSegment)
+          actualSegment = []
+      else 
+        actualSegment.push({x: x; y: y})
+
+    segments.push(actualSegment)
+
+    return segments
+
 
 
 
