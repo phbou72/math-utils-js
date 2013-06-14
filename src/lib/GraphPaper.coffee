@@ -263,7 +263,7 @@ class MathUtils.GraphPaper
       .y((d) -> return d.y)
       .interpolate("linear")
 
-    @drawPath(path, vertexs, lineFunction)
+    @drawPath(path, vertexs, lineFunction, "line")
 
 
   drawPolygon: (path, vertexs) =>
@@ -272,22 +272,15 @@ class MathUtils.GraphPaper
       .y((d) -> return d.y)
       .interpolate("linear-closed")
 
-    @drawPath(path, vertexs, polygonFunction)
+    @drawPath(path, vertexs, polygonFunction, "polygon")
 
-  drawFunction: (path, vertexs) =>
-    line = d3.svg.line()
-      .x((d) -> return d.x)
-      .y((d) -> return d.y)
-      .interpolate("basis")
+  drawPath: (path, vertexs, lineFunction, shapeType) =>
+    if shapeType isnt "function"
+      path.on("mousemove", @showAddVertexHandle)
+        .on("mouseout", @hideVertexHandle)
 
-    @drawPath(path, vertexs, polygonFunction)
-
-
-  drawPath: (path, vertexs, lineFunction) =>
-    path.on("mousemove", @showAddVertexHandle)
-      .on("mouseout", @hideVertexHandle)
-      .on("mousedown", @onMouseDownPath)
-      .on("mouseup", @onMouseUpPath)
+    path.on("mousedown", @onMouseDownPath)
+        .on("mouseup", @onMouseUpPath)
 
     pathGroup = path.select("g.path-group")
 
@@ -466,7 +459,7 @@ class MathUtils.GraphPaper
       .attr("class", "path added-function")
 
     for segment in segments 
-      @drawPath(group, segment, line)
+      @drawPath(group, segment, line, "function")
 
     $("#functionPlotModal").modal("hide")
 
@@ -901,6 +894,8 @@ class MathUtils.GraphPaper
       return "line"
     else if d3.select(parentPath).classed("added-polygon") is yes
       return "polygon"
+    else 
+      return "none"
 
 
   posToRealPos: (coord) =>
