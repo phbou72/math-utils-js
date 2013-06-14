@@ -5,6 +5,7 @@ class MathUtils.GraphPaper
   gridSize = 50
   vertexSize = 8
   origin = {x: 0, y: 0}
+  domainX = [0, 5]
   space = 5
   svg = null
   node = null
@@ -39,7 +40,7 @@ class MathUtils.GraphPaper
   drawModes = ["free", "snapToGrid", "snapToIntersection"]
   currentDrawMode = "snapToIntersection"
 
-  tools = ["move", "delete", "vertex", "line", "polygon"]
+  tools = ["move", "delete", "vertex", "line", "polygon", "function"]
   currentTool = "move"
 
   registeredEvent = []
@@ -50,7 +51,7 @@ class MathUtils.GraphPaper
   hideAddVertexHandleTimer = null
 
 
-  constructor: (selector, width, height) ->
+  constructor: (selector) ->
 
     svg = d3.select(selector)
 
@@ -58,6 +59,7 @@ class MathUtils.GraphPaper
     width = parent.width
     height = parent.height
     origin = { x: gridSize, y: height - gridSize }
+    domainX = [0, Math.ceil(width / gridSize)]
 
     svg = svg.append('g')
     node = svg.node()
@@ -123,6 +125,8 @@ class MathUtils.GraphPaper
         @hideVertexPointer()
         @hideLinePointer()
 
+      else return null
+
     svg.on("click", null)
       .on("touchmove", null)
       .on("mousemove", null)
@@ -147,6 +151,11 @@ class MathUtils.GraphPaper
         svg.on("click", @addPolygon)
           .on("touchmove", @showPolygonTool)
           .on("mousemove", @showPolygonTool)
+
+      when "function"
+        @showFunctionPlotModal()
+
+      else return null
 
 
   #####
@@ -265,6 +274,14 @@ class MathUtils.GraphPaper
 
     @drawPath(path, vertexs, polygonFunction)
 
+  drawFunction: (path, vertexs) =>
+    line = d3.svg.line()
+      .x((d) -> return d.x)
+      .y((d) -> return d.y)
+      .interpolate("basis")
+
+    @drawPath(path, vertexs, polygonFunction)
+
 
   drawPath: (path, vertexs, lineFunction) =>
     path.on("mousemove", @showAddVertexHandle)
@@ -280,6 +297,8 @@ class MathUtils.GraphPaper
     pathGroup.selectAll("path").remove()  # TODO No join operation?
     pathGroup.append('path')
       .attr("d", lineFunction(vertexs))
+
+
 
 
   #####
@@ -430,7 +449,56 @@ class MathUtils.GraphPaper
 
 
   #####
-  ## Handles Add Vertex Tool
+  ## Function plotting tool
+
+  addFunctionPlot: =>
+    variable = $("#inputVariable").val()
+    expression = $("#inputExpression").val()
+    $("#functionPlotModal").hide()
+
+    # Recover the math expression
+
+    @interpolateFunction(variable, expression)
+
+
+  showFunctionPlotModal: =>
+    modal = $("#functionPlotModal").modal({})
+    modal.on("hide", @hideFunctionPlotModal)
+
+    $("#addFunctionButton").on("click", @addFunctionPlot)
+
+  hideFunctionPlotModal: =>
+    @switchToTool("move")
+    variable = $("#inputVariable").val("x")
+    expression = $("#inputExpression").val("")
+
+  validateFunctionExpression: (variable, expression) =>
+    # Is variable and expression not null
+    # Is variable inside the expression
+    # Is the expression correctly parsed?
+
+  interpolateFunction: (variable, expression)=>
+    parser = new MathUtils.EquationParser()
+    coords = []
+    actualSegment = []
+
+    for x in [domainX[0] .. domainX[1]] by 0.1
+      exp = expression.replace variable, x
+      console.log exp
+      y = parser.evaluate(exp)
+      console.log y
+
+      # verify if NaN of Infinity
+        # Handle invalid values and cut by segment then
+      coord = {x: x; y: y}
+      actualSegment.push(coord)
+
+
+
+  #####
+  ## Handles Add Vertex ToolBootstrap's modal class exposes a few events for hooking into modal functionality.
+
+
 
   showAddVertexHandle: =>
     if currentTool is "move" and not draggingVertex and not draggingPath 

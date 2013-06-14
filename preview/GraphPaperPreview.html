@@ -12,10 +12,13 @@
   <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
   <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 
-  <script src="../lib/math.utils.min.js" type="text/javascript"></script>
+  <!--script src="../lib/math.utils.min.js" type="text/javascript"></script-->
   
-  <!--script src="../build/lib/Namespace.js" type="text/javascript"></script>
-  <script src="../build/lib/GraphPaper.js" type="text/javascript"></script-->
+  <script src="../build/lib/Namespace.js" type="text/javascript"></script>
+  <script src="../build/lib/EquationParser.js" type="text/javascript"></script>
+  <script src="../build/lib/math.utils.equation.evaluator.js" type="text/javascript"></script>
+  <script src="../build/lib/EquationParser.js" type="text/javascript"></script>
+  <script src="../build/lib/GraphPaper.js" type="text/javascript"></script>
   
   <script src="js/internal/graph-paper-preview.js" type="text/javascript"></script>
 
@@ -39,7 +42,33 @@
         <li><a href="#" class="vertex">Vertex</a></li>
         <li><a href="#" class="line">Line</a></li>
         <li><a href="#" class="polygon">Polygon</a></li>
+        <li><a href="#" class="function">Plot function</a></li>
       </ul>
+    </div>
+  </div>
+
+  <div id="functionPlotModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="functionPlot" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+      <h3 id="functionPlotLabel">Add function plot</h3>
+    </div>
+    <div class="modal-body">
+      <div class="control-group">
+        <label class="control-label" for="inputVariable">Variable</label>
+        <div class="controls">
+          <input class="input-mini" type="text" id="inputVariable" value="x" placeholder="Ex: x">
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="inputExpression">Math Expression</label>
+        <div class="controls">
+          <input type="text" id="inputExpression" placeholder="Ex: log(x) + 1/x">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+      <button class="btn btn-primary" id="addFunctionButton">Add</button>
     </div>
   </div>
 </div>
