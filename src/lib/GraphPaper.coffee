@@ -455,7 +455,7 @@ class MathUtils.GraphPaper
     line = d3.svg.line()
       .x((d) -> return d.x)
       .y((d) -> return d.y)
-      .interpolate("basis")
+      .interpolate("monotone")
 
     variable = $("#inputVariable").val()
     expression = $("#inputExpression").val()
@@ -468,7 +468,7 @@ class MathUtils.GraphPaper
     for segment in segments 
       @drawPath(group, segment, line)
 
-    $("#functionPlotModal").hide()
+    $("#functionPlotModal").modal("hide")
 
 
   showFunctionPlotModal: =>
