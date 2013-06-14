@@ -452,13 +452,23 @@ class MathUtils.GraphPaper
   ## Function plotting tool
 
   addFunctionPlot: =>
+    line = d3.svg.line()
+      .x((d) -> return d.x)
+      .y((d) -> return d.y)
+      .interpolate("basis")
+
     variable = $("#inputVariable").val()
     expression = $("#inputExpression").val()
+
+    segments = @interpolateFunction(variable, expression)
+
+    group = linesTracer.append("g")
+      .attr("class", "path added-function")
+
+    for segment in segments 
+      @drawPath(group, segment, line)
+
     $("#functionPlotModal").hide()
-
-    # Recover the math expression
-
-    @interpolateFunction(variable, expression)
 
 
   showFunctionPlotModal: =>
@@ -482,7 +492,7 @@ class MathUtils.GraphPaper
     segments = []
     actualSegment = []
 
-    for x in [domainX[0] .. domainX[1]] by 0.1
+    for x in [domainX[0] .. domainX[1]] by 0.01
       exp = expression.replace variable, x
       y = parser.evaluate(exp)
 
@@ -491,9 +501,10 @@ class MathUtils.GraphPaper
           segments.push(actualSegment)
           actualSegment = []
       else 
-        actualSegment.push({x: x; y: y})
+        actualSegment.push(@realPosToPos({x: x; y: y}))
 
-    segments.push(actualSegment)
+    if not _.isEmpty(actualSegment)
+      segments.push(actualSegment)
 
     return segments
 
