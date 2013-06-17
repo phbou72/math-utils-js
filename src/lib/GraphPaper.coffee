@@ -239,7 +239,7 @@ class MathUtils.GraphPaper
 
   #####
   ## Drawing methods for shapes
-
+w
    drawVertexs: (path, vertexs) =>
     vertexsGroup = path.select("g.vertexs")
 
@@ -261,13 +261,6 @@ class MathUtils.GraphPaper
     vertexsCircle.exit().remove()
 
 
-  drawLine: (path, vertexs) =>
-    @drawPath(path, vertexs, "line")
-
-
-  drawPolygon: (path, vertexs) =>
-    @drawPath(path, vertexs, "polygon")
-
   drawPath: (path, vertexs, shapeType) =>
     linesType = polygon: "linear-closed", line: "linear", function: "monotone"
     lineFunction = d3.svg.line()
@@ -280,7 +273,7 @@ class MathUtils.GraphPaper
         .on("mouseout", @hideVertexHandle)
 
     path.on("mousedown", @onMouseDownPath)
-        .on("mouseup", @onMouseUpPath)
+      .on("mouseup", @onMouseUpPath)
 
     pathGroup = path.select("g.path-group")
 
@@ -330,9 +323,8 @@ class MathUtils.GraphPaper
   addVertex: =>
     d3.event.preventDefault()
 
-    cx = vertexPointer.attr("cx")
-    cy = vertexPointer.attr("cy")
-    linesVertexs[lastLineIndex].push({x: parseFloat(cx), y: parseFloat(cy)})
+    coords = x: parseFloat(vertexPointer.attr("cx")), y: parseFloat(vertexPointer.attr("cy"))
+    linesVertexs[lastLineIndex].push(coords)
 
     if linesVertexs[lastLineIndex].length is 1
       lastLine = linesTracer.append("g").attr("class", "path added-vertex")
@@ -364,14 +356,13 @@ class MathUtils.GraphPaper
       isDoubleClick = true
       doubleClickTimer = setTimeout(@timerEndDoubleClick, 200)
 
-      cx = vertexPointer.attr("cx")
-      cy = vertexPointer.attr("cy")
-      linesVertexs[lastLineIndex].push({x: parseFloat(cx), y: parseFloat(cy)})
+      coords = x: parseFloat(vertexPointer.attr("cx")), y: parseFloat(vertexPointer.attr("cy"))
+      linesVertexs[lastLineIndex].push(coords)
 
       if linesVertexs[lastLineIndex].length is 1
         lastLine = linesTracer.append("g").attr("class", "path added-line")
 
-      @drawLine(lastLine, linesVertexs[lastLineIndex])
+      @drawPath(lastLine, linesVertexs[lastLineIndex], "line")
       @drawVertexs(lastLine, linesVertexs[lastLineIndex])
 
     else
@@ -408,15 +399,14 @@ class MathUtils.GraphPaper
       isDoubleClick = true
       doubleClickTimer = setTimeout(@timerEndDoubleClick, 200)
 
-      cx = vertexPointer.attr("cx")
-      cy = vertexPointer.attr("cy")
-      linesVertexs[lastLineIndex].push({x: parseFloat(cx), y: parseFloat(cy)})
+      coords = x: parseFloat(vertexPointer.attr("cx")), y: parseFloat(vertexPointer.attr("cy"))
+      linesVertexs[lastLineIndex].push(coords)
 
       if linesVertexs[lastLineIndex].length is 1
         lastLine = linesTracer.append("g")
           .attr("class", "path added-polygon")
 
-      @drawPolygon(lastLine, linesVertexs[lastLineIndex])
+      @drawPath(lastLine, linesVertexs[lastLineIndex], "polygon")
       @drawVertexs(lastLine, linesVertexs[lastLineIndex])
 
     else
@@ -854,7 +844,7 @@ class MathUtils.GraphPaper
     vertexList = linesVertexs[lastLineIndex].slice(0)
     vertexList.push(coord)
 
-    @drawPolygon(lastLine, vertexList)
+    @drawPath(lastLine, vertexList, "polygon")
     @drawVertexs(lastLine, linesVertexs[lastLineIndex])
 
 
@@ -893,14 +883,14 @@ class MathUtils.GraphPaper
 
     return x: realX, y: realY
 
-  realPosToPos: (realCoord) =>
-    return x: @realXPosToPos(realCoord.x), y: @realYPosToPos(realCoord.y)
+  realPosToPos: (coord) =>
+    return x: @realXPosToPos(coord.x), y: @realYPosToPos(coord.y)
 
-  realXPosToPos: (realXPos) =>
-    return realXPos * gridSize + origin.x
+  realXPosToPos: (pos) =>
+    return pos * gridSize + origin.x
 
-  realYPosToPos: (realYPos) =>
-    return origin.y - realYPos * gridSize
+  realYPosToPos: (pos) =>
+    return origin.y - pos * gridSize
 
   truncateFloat: (number) =>
     return Math.round(number * 10) / 10
