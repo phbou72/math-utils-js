@@ -239,7 +239,7 @@ class MathUtils.GraphPaper
 
   #####
   ## Drawing methods for shapes
-w
+
    drawVertexs: (path, vertexs) =>
     vertexsGroup = path.select("g.vertexs")
 
@@ -572,7 +572,7 @@ w
 
   onHandleClickAddVertex: (data, handleId) =>
     handle = d3.select(d3.event.target)
-    parentPath = d3.select(handle.parentNode)[0][0].parentNode
+    parentPath = d3.select(d3.event.target.parentNode)[0][0].parentNode
     pathIndex = @findParentPathIndex(parentPath)
 
     coords = x: parseFloat(handle.attr("cx")), y: parseFloat(handle.attr("cy"))
@@ -624,10 +624,8 @@ w
       @showVertexCoordinates(coord)
 
       pathNode = d3.select(parentPath)
-      if pathNode.classed("added-polygon") or pathNode.classed("initial-polygon")
-        @drawPath(d3.select(parentPath), linesVertexs[parentPathIndex], "polygon")
-      else if pathNode.classed("added-line") or pathNode.classed("initial-shape")
-        @drawPath(d3.select(parentPath), linesVertexs[parentPathIndex], "line")
+      shapeType = @getParentPathShapeType(parentPath)
+      @drawPath(d3.select(parentPath), linesVertexs[parentPathIndex], shapeType)
 
 
   startDraggingPath: =>
@@ -699,7 +697,7 @@ w
       @drawVertexs(d3.select(parentPath), [])
 
     else
-      shapeType = @getParentPathShapeType(pathParent)
+      shapeType = @getParentPathShapeType(parentPath)
       @drawVertexs(d3.select(parentPath), linesVertexs[pathId])
       @drawPath(pathNode, linesVertexs[pathId], shapeType)
 
