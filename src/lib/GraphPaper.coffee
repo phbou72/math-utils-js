@@ -4,7 +4,7 @@ class MathUtils.GraphPaper
   height = 300
   gridSize = 50
   vertexSize = 8
-  origin = {x: 0, y: 0}
+  origin = x: 0, y: 0
   domainX = [0, 5]
   space = 5
   svg = null
@@ -58,7 +58,7 @@ class MathUtils.GraphPaper
     parent = svg.node().parentNode.getBoundingClientRect()
     width = parent.width
     height = parent.height
-    origin = { x: gridSize, y: height - gridSize }
+    origin = x: gridSize, y: height - gridSize
     domainX = [0, Math.ceil(width / gridSize)]
 
     svg = svg.append('g')
@@ -206,18 +206,22 @@ class MathUtils.GraphPaper
     nbLines = Math.ceil(width * space / gridSize)
     for i in [0..nbLines]
       pos += gridSize
+
       x1 = pos
       y1 = origin.y + (gridSize - gridSize * 0.1) / 2
-      realPos1 = @posToRealPos({x: x1, y: y1})
-      numbersCoord.push({x: x1, y: y1, value: realPos1.x})
+      coords1 = x: x1, y: y1
+      coords1.number = @posToRealPos(coords1).x
+      numbersCoord.push(coords1)
 
       x2 = origin.x - gridSize / 2
       y2 = pos
-      realPos2 = @posToRealPos({x: x2, y: y2})
-      numbersCoord.push({x: x2, y: y2, value: realPos2.y})
+      coords2 = x: x2, y: y2
+      coords2.number = @posToRealPos(coords2).y
+      numbersCoord.push(coords2)
 
-    numbersCoord = numbersCoord.filter (number) -> number.value isnt 0
-    numbersCoord.push({x: origin.x - gridSize / 2.5, y: origin.y + gridSize / 2.5, value: 0})
+    numbersCoord = numbersCoord.filter (coords) -> coords.number isnt 0
+    zeroOriginCoords = x: (origin.x - gridSize / 2.5), y: (origin.y + gridSize / 2.5), number: 0
+    numbersCoord.push(zeroOriginCoords)
 
     @addNumbersTextToAxis(numbersCoord)
 
@@ -228,7 +232,7 @@ class MathUtils.GraphPaper
       .attr("class", "axis-number")
       .attr("x", (d) -> return d.x)
       .attr("y", (d) -> return d.y)
-      .text((d) -> return d.value)
+      .text((d) -> return d.number)
       .attr("text-anchor", "middle")
       .attr("dy", ".35em")
 
@@ -258,23 +262,19 @@ class MathUtils.GraphPaper
 
 
   drawLine: (path, vertexs) =>
-    lineFunction = d3.svg.line()
-      .x((d) -> return d.x)
-      .y((d) -> return d.y)
-      .interpolate("linear")
-
-    @drawPath(path, vertexs, lineFunction, "line")
+    @drawPath(path, vertexs, "line")
 
 
   drawPolygon: (path, vertexs) =>
-    polygonFunction = d3.svg.line()
+    @drawPath(path, vertexs, "polygon")
+
+  drawPath: (path, vertexs, shapeType) =>
+    linesType = polygon: "linear-closed", line: "linear", function: "monotone"
+    lineFunction = d3.svg.line()
       .x((d) -> return d.x)
       .y((d) -> return d.y)
-      .interpolate("linear-closed")
+      .interpolate(linesType[shapeType])
 
-    @drawPath(path, vertexs, polygonFunction, "polygon")
-
-  drawPath: (path, vertexs, lineFunction, shapeType) =>
     if shapeType isnt "function"
       path.on("mousemove", @showAddVertexHandle)
         .on("mouseout", @hideVertexHandle)
@@ -435,21 +435,16 @@ class MathUtils.GraphPaper
     @showVertexPointer(coord)
     @showVertexCoordinates(coord)
 
-    if linesVertexs[lastLineIndex].length in [1, 2]
-      @showLinePointer(coord)
-    else if linesVertexs[lastLineIndex].length > 2
+    if linesVertexs[lastLineIndex].length >= 2
       @showPolygonPointer(coord)
+    else
+      @showLinePointer(coord)
 
 
   #####
   ## Function plotting tool
 
   addFunctionPlot: =>
-    line = d3.svg.line()
-      .x((d) -> return d.x)
-      .y((d) -> return d.y)
-      .interpolate("monotone")
-
     variable = $("#inputVariable").val()
     expression = $("#inputExpression").val()
 
@@ -459,7 +454,10 @@ class MathUtils.GraphPaper
       .attr("class", "path added-function")
 
     for segment in segments 
-      @drawPath(group, segment, line, "function")
+      @drawPath(group, segment, "function")
+
+    linesVertexs.push(segments)
+    lastLineIndex++
 
     $("#functionPlotModal").modal("hide")
 
@@ -518,6 +516,7 @@ class MathUtils.GraphPaper
 
       if not @isShapeEditable(parentPath)
         return 
+
       if d3.select(parentPath).select("g.handles").empty() is true
         d3.select(parentPath).append("g")
           .attr("class", "handles")
@@ -582,20 +581,17 @@ class MathUtils.GraphPaper
 
 
   onHandleClickAddVertex: (data, handleId) =>
-    handle = d3.event.target
+    handle = d3.select(d3.event.target)
     parentPath = d3.select(handle.parentNode)[0][0].parentNode
     pathIndex = @findParentPathIndex(parentPath)
 
-    x = parseFloat(d3.select(handle).attr("cx"))
-    y = parseFloat(d3.select(handle).attr("cy"))
+    coords = x: parseFloat(handle.attr("cx")), y: parseFloat(handle.attr("cy"))
 
-    linesVertexs[pathIndex].splice(handleId + 1, 0, {x: x, y: y})
+    linesVertexs[pathIndex].splice(handleId + 1, 0, coords)
 
-    if d3.select(parentPath).classed("added-polygon")
-      @drawPolygon(d3.select(parentPath), linesVertexs[pathIndex])
-    else if d3.select(parentPath).classed("added-line")
-      @drawLine(d3.select(parentPath), linesVertexs[pathIndex])
+    shapeType = @getParentPathShapeType(parentPath)
 
+    @drawPath(d3.select(parentPath), linesVertexs[pathIndex], shapeType)
     @drawVertexs(d3.select(parentPath), linesVertexs[pathIndex])
 
 
@@ -639,9 +635,9 @@ class MathUtils.GraphPaper
 
       pathNode = d3.select(parentPath)
       if pathNode.classed("added-polygon") or pathNode.classed("initial-polygon")
-        @drawPolygon(d3.select(parentPath), linesVertexs[parentPathIndex])
+        @drawPath(d3.select(parentPath), linesVertexs[parentPathIndex], "polygon")
       else if pathNode.classed("added-line") or pathNode.classed("initial-shape")
-        @drawLine(d3.select(parentPath), linesVertexs[parentPathIndex])
+        @drawPath(d3.select(parentPath), linesVertexs[parentPathIndex], "line")
 
 
   startDraggingPath: =>
@@ -679,7 +675,7 @@ class MathUtils.GraphPaper
     if lastMousePosition?
       x = actualMouseCoord.x - lastMousePosition.x
       y = actualMouseCoord.y - lastMousePosition.y
-      translation = {x: x, y: y}
+      translation = x: x, y: y
 
       lastMousePosition = actualMouseCoord
 
@@ -689,11 +685,7 @@ class MathUtils.GraphPaper
         linesVertexs[draggedPathId][id] = vertex
 
       shapeType = @getParentPathShapeType(draggedPath)
-      if shapeType is "polygon"
-        @drawPolygon(d3.select(draggedPath), linesVertexs[draggedPathId])
-      else if shapeType is "line"
-        @drawLine(d3.select(draggedPath), linesVertexs[draggedPathId])
-
+      @drawPath(d3.select(draggedPath), linesVertexs[draggedPathId], shapeType)
       @drawVertexs(d3.select(draggedPath), linesVertexs[draggedPathId])
 
 
@@ -717,12 +709,9 @@ class MathUtils.GraphPaper
       @drawVertexs(d3.select(parentPath), [])
 
     else
+      shapeType = @getParentPathShapeType(pathParent)
       @drawVertexs(d3.select(parentPath), linesVertexs[pathId])
-
-      if pathNode.classed("added-polygon") or pathNode.classed("added-polygon")
-        @drawPolygon(pathNode, linesVertexs[pathId])
-      else if pathNode.classed("added-line") or pathNode.classed("initial-shape")
-        @drawLine(pathNode, linesVertexs[pathId])
+      @drawPath(pathNode, linesVertexs[pathId], shapeType)
 
 
   deletePath: =>
@@ -902,10 +891,10 @@ class MathUtils.GraphPaper
     realX = @truncateFloat((coord.x - origin.x) / gridSize)
     realY = @truncateFloat((origin.y - coord.y) / gridSize)
 
-    return {x: realX, y: realY}
+    return x: realX, y: realY
 
   realPosToPos: (realCoord) =>
-    return {x: @realXPosToPos(realCoord.x), y: @realYPosToPos(realCoord.y)}
+    return x: @realXPosToPos(realCoord.x), y: @realYPosToPos(realCoord.y)
 
   realXPosToPos: (realXPos) =>
     return realXPos * gridSize + origin.x
@@ -974,7 +963,7 @@ class MathUtils.GraphPaper
       lastLineIndex++
 
 
-  addInitialPath: (paths, pathType) =>
+  addInitialPath: (paths, shapeType) =>
     for path in paths
       vertexs = [] 
       if linesVertexs[lastLineIndex].length isnt 0
@@ -985,19 +974,14 @@ class MathUtils.GraphPaper
         vertexs.push(@realPosToPos(vertex))
         
       linesVertexs[lastLineIndex] = vertexs
-      @drawInitialPath(vertexs, pathType)
+      @drawInitialPath(vertexs, shapeType)
       linesVertexs.push([])
       lastLineIndex++
 
 
-  drawInitialPath: (vertexs, pathType) =>
-      if pathType is "line"
-        lastLine = linesTracer.append("g").attr("class", "path added-line initial-shape")
-        @drawLine(lastLine, vertexs)
-      else if pathType is "polygon"
-        lastLine = linesTracer.append("g").attr("class", "path added-polygon initial-shape")
-        @drawPolygon(lastLine, vertexs)
-
+  drawInitialPath: (vertexs, shapeType) =>
+      lastLine = linesTracer.append("g").attr("class", "path added-#{shapeType} initial-shape")
+      @drawPath(lastLine, vertexs, shapeType)
       @drawVertexs(lastLine, vertexs)
 
 
